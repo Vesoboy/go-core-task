@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "Dockerfile": "dockerfile",
-        "*.yml": "go",
-        "plyconfig.json": "jsonc"
-    }
-}
