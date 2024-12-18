@@ -6,8 +6,12 @@ import (
 
 func TestRandomNumber(t *testing.T) {
 	number := make(chan int)
+	countNumber := 10
+	go RandomNumber(number, countNumber)
 
-	go RandomNumber(number)
+	if len(number) == countNumber {
+		t.Errorf("%d элементов, ожидалось %d", len(number), countNumber)
+	}
 
 	randomValue, ok := <-number
 	if !ok {

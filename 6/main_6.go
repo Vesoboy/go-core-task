@@ -5,15 +5,22 @@ import (
 	"math/rand"
 )
 
-func RandomNumber(number chan int) {
+func RandomNumber(number chan int, count int) chan int {
 	defer close(number)
-	number <- rand.Intn(1000)
+	for i := 0; i < count; i++ {
+		number <- rand.Intn(1000)
+	}
+	return number
 }
 
 func main() {
+
 	number := make(chan int)
+	countNumber := 10
 
-	go RandomNumber(number)
+	go RandomNumber(number, countNumber)
 
-	fmt.Println("Случайное число:", <-number)
+	for val := range number {
+		fmt.Printf("Случайное число: %d\n", val)
+	}
 }

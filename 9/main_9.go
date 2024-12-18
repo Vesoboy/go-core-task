@@ -6,38 +6,32 @@ import (
 	"math/rand/v2"
 )
 
-func PowNumberTree(number chan []int, number2 chan<- float64) {
-	go func() {
-
-		for val := range number {
-			for _, num := range val {
-				number2 <- math.Pow(float64(num), 3)
-			}
+func PowNumberTree(number chan []int, numberPow chan<- float64) {
+	defer close(numberPow)
+	for val := range number {
+		for _, num := range val {
+			numberPow <- math.Pow(float64(num), 3)
 		}
-		close(number2)
-	}()
+	}
 }
 
-func GenerateNumbers(ch chan []int) {
-	numbers := []int{rand.IntN(256)}
-	ch <- numbers
+func GenerateNumbers(number chan []int, count int) {
+	defer close(number)
+	for i := 0; i < count; i++ {
+		number <- []int{rand.IntN(256)}
+	}
 }
 
 func main() {
 
-	number1 := make(chan []int)
-	number2 := make(chan float64)
-	go PowNumberTree(number1, number2)
+	number := make(chan []int)
+	numberPow := make(chan float64)
+	countNumber := 10
+	go PowNumberTree(number, numberPow)
 
-	go func() {
-		for i := 0; i < 10; i++ {
-			GenerateNumbers(number1)
-		}
-		close(number1)
-	}()
+	go GenerateNumbers(number, countNumber)
 
-	for val := range number2 {
+	for val := range numberPow {
 		fmt.Printf("Rand Value: %.2f\n", val)
 	}
-
 }
